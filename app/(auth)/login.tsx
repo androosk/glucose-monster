@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { Link } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
@@ -48,8 +49,13 @@ export default function LoginScreen() {
       style={styles.container}
     >
       <View style={styles.content}>
-        <Text style={styles.title}>GlucoseMojo</Text>
-        <Text style={styles.subtitle}>Track your blood glucose</Text>
+        <Image
+          source={require('@/assets/images/mascot-laptop.png')}
+          style={styles.mascot}
+          resizeMode="contain"
+        />
+        <Text style={styles.title}>Glucose Monster</Text>
+        <Text style={styles.subtitle}>Tame the monster. Track your glucose.</Text>
 
         <View style={styles.form}>
           <TextInput
@@ -108,6 +114,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 24,
+  },
+  mascot: {
+    width: 140,
+    height: 140,
+    alignSelf: 'center',
+    marginBottom: 16,
   },
   title: {
     fontSize: 32,

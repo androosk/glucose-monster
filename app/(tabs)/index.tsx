@@ -5,6 +5,7 @@ import {
   RefreshControl,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { format } from 'date-fns';
 import { useRouter } from 'expo-router';
@@ -129,7 +130,14 @@ export default function DashboardScreen() {
   if (loading && readings.length === 0) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#10B981" />
+        <Image
+          source={require('@/assets/images/mascot-laptop.png')}
+          style={styles.loadingMascot}
+          resizeMode="contain"
+        />
+        <Text style={[styles.loadingText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+          Loading your readings...
+        </Text>
       </View>
     );
   }
@@ -188,8 +196,16 @@ export default function DashboardScreen() {
         }
         ListEmptyComponent={
           <View style={styles.emptyState}>
+            <Image
+              source={require('@/assets/images/mascot.png')}
+              style={styles.emptyMascot}
+              resizeMode="contain"
+            />
+            <Text style={[styles.emptyTitle, { color: isDark ? '#F9FAFB' : '#111827' }]}>
+              No readings yet!
+            </Text>
             <Text style={[styles.emptyText, { color: isDark ? '#6B7280' : '#9CA3AF' }]}>
-              No readings yet. Tap "Add Reading" to get started!
+              Tap "Add Reading" to log your first glucose reading and start taming the monster.
             </Text>
           </View>
         }
@@ -208,6 +224,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  loadingMascot: {
+    width: 150,
+    height: 150,
+    marginBottom: 16,
+  },
+  loadingText: {
+    fontSize: 16,
   },
   statsCard: {
     padding: 20,
@@ -301,10 +325,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 48,
+    paddingHorizontal: 32,
+  },
+  emptyMascot: {
+    width: 180,
+    height: 180,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 8,
   },
   emptyText: {
     fontSize: 16,
     textAlign: 'center',
+    lineHeight: 22,
   },
   emptyContainer: {
     flex: 1,

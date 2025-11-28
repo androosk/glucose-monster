@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { format } from 'date-fns';
 
 import { Text, View } from '@/components/Themed';
 import { useReadingsStore } from '@/store/readingsStore';
@@ -33,6 +35,9 @@ export default function AddReadingScreen() {
   const [insulin, setInsulin] = useState('');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
+  const [recordedAt, setRecordedAt] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const { addReading } = useReadingsStore();
   const router = useRouter();
@@ -70,7 +75,7 @@ export default function AddReadingScreen() {
       notes: notes.trim() || null,
       tags: null,
       meal_id: null,
-      recorded_at: new Date().toISOString(),
+      recorded_at: recordedAt.toISOString(),
     });
 
     setLoading(false);
@@ -92,6 +97,7 @@ export default function AddReadingScreen() {
       setInsulin('');
       setNotes('');
       setReadingType('random');
+      setRecordedAt(new Date());
       router.push('/(tabs)');
     }
   };
@@ -126,6 +132,63 @@ export default function AddReadingScreen() {
           placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
           maxLength={3}
         />
+
+        <Text style={[styles.label, { color: isDark ? '#F9FAFB' : '#111827' }]}>
+          Date & Time
+        </Text>
+        <View style={styles.dateTimeRow}>
+          <TouchableOpacity
+            style={[
+              styles.dateTimeButton,
+              {
+                backgroundColor: isDark ? '#1F2937' : '#F9FAFB',
+                borderColor: isDark ? '#374151' : '#E5E7EB',
+              },
+            ]}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text style={[styles.dateTimeText, { color: isDark ? '#F9FAFB' : '#111827' }]}>
+              {format(recordedAt, 'MMM d, yyyy')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.dateTimeButton,
+              {
+                backgroundColor: isDark ? '#1F2937' : '#F9FAFB',
+                borderColor: isDark ? '#374151' : '#E5E7EB',
+              },
+            ]}
+            onPress={() => setShowTimePicker(true)}
+          >
+            <Text style={[styles.dateTimeText, { color: isDark ? '#F9FAFB' : '#111827' }]}>
+              {format(recordedAt, 'h:mm a')}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {showDatePicker && (
+          <DateTimePicker
+            value={recordedAt}
+            mode="date"
+            display="spinner"
+            onChange={(event, date) => {
+              setShowDatePicker(false);
+              if (date) setRecordedAt(date);
+            }}
+            maximumDate={new Date()}
+          />
+        )}
+        {showTimePicker && (
+          <DateTimePicker
+            value={recordedAt}
+            mode="time"
+            display="spinner"
+            onChange={(event, date) => {
+              setShowTimePicker(false);
+              if (date) setRecordedAt(date);
+            }}
+          />
+        )}
 
         <Text
           style={[styles.quickLabel, { color: isDark ? '#9CA3AF' : '#6B7280' }]}
@@ -316,6 +379,23 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  dateTimeRow: {
+    flexDirection: 'row',
+    gap: 12,
+    backgroundColor: 'transparent',
+  },
+  dateTimeButton: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  dateTimeText: {
+    fontSize: 16,
+    fontWeight: '500',
   },
   notesInput: {
     height: 100,
