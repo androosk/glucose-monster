@@ -19,7 +19,7 @@ const READING_TYPE_LABELS: Record<ReadingType, string> = {
   pre_meal: 'Pre-meal',
   post_30: 'Post-meal (30m)',
   post_90: 'Post-meal (90m)',
-  random: 'Random',
+  random: 'Other',
 };
 
 function getGlucoseColor(value: number, targetMin = 70, targetMax = 140) {
@@ -75,9 +75,18 @@ function ReadingItem({
           </Text>
         )}
       </View>
-      {reading.carbs && (
-        <View style={styles.carbsBadge}>
-          <Text style={styles.carbsText}>{reading.carbs}g</Text>
+      {(reading.carbs || reading.insulin) && (
+        <View style={styles.badges}>
+          {reading.carbs && (
+            <View style={styles.carbsBadge}>
+              <Text style={styles.carbsText}>{reading.carbs}g</Text>
+            </View>
+          )}
+          {reading.insulin && (
+            <View style={styles.insulinBadge}>
+              <Text style={styles.insulinText}>{reading.insulin}u</Text>
+            </View>
+          )}
         </View>
       )}
     </TouchableOpacity>
@@ -261,6 +270,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
   },
+  badges: {
+    flexDirection: 'column',
+    gap: 4,
+    alignItems: 'flex-end',
+  },
   carbsBadge: {
     backgroundColor: '#FBBF24',
     paddingHorizontal: 8,
@@ -271,6 +285,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: '#78350F',
+  },
+  insulinBadge: {
+    backgroundColor: '#818CF8',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  insulinText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#1E1B4B',
   },
   emptyState: {
     alignItems: 'center',
