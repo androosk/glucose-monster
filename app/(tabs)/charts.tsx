@@ -1,15 +1,115 @@
 import { useState, useEffect } from 'react';
 import { StyleSheet, ScrollView, Dimensions } from 'react-native';
-import { CartesianChart, Line } from 'victory-native';
-import { format, subDays, startOfDay } from 'date-fns';
+import { subDays, startOfDay } from 'date-fns';
+import Svg, { Polyline, Circle, Line as SvgLine, Text as SvgText } from 'react-native-svg';
 
 import { Text, View } from '@/components/Themed';
 import { useReadingsStore } from '@/store/readingsStore';
 import { useColorScheme } from '@/components/useColorScheme';
 
 const { width: screenWidth } = Dimensions.get('window');
+const CHART_HEIGHT = 200;
+const CHART_PADDING = { top: 20, right: 20, bottom: 30, left: 45 };
 
 type TimeFilter = 'today' | 'week' | 'month';
+
+interface ChartDataPoint {
+  x: number;
+  y: number;
+  date: Date;
+}
+
+function SimpleLineChart({
+  data,
+  isDark,
+  targetMin,
+  targetMax,
+}: {
+  data: ChartDataPoint[];
+  isDark: boolean;
+  targetMin: number;
+  targetMax: number;
+}) {
+  const chartWidth = screenWidth - 32;
+  const chartInnerWidth = chartWidth - CHART_PADDING.left - CHART_PADDING.right;
+  const chartInnerHeight = CHART_HEIGHT - CHART_PADDING.top - CHART_PADDING.bottom;
+
+  const yValues = data.map((d) => d.y);
+  const yMin = Math.min(...yValues, targetMin) - 10;
+  const yMax = Math.max(...yValues, targetMax) + 10;
+
+  const getX = (index: number) =>
+    CHART_PADDING.left + (index / (data.length - 1)) * chartInnerWidth;
+
+  const getY = (value: number) =>
+    CHART_PADDING.top + chartInnerHeight - ((value - yMin) / (yMax - yMin)) * chartInnerHeight;
+
+  const points = data.map((d, i) => `${getX(i)},${getY(d.y)}`).join(' ');
+
+  const gridColor = isDark ? '#374151' : '#E5E7EB';
+  const textColor = isDark ? '#9CA3AF' : '#6B7280';
+
+  const yTicks = [yMin, targetMin, targetMax, yMax].sort((a, b) => a - b);
+
+  return (
+    <Svg width={chartWidth} height={CHART_HEIGHT}>
+      {/* Target range background */}
+      <Polyline
+        points={`${CHART_PADDING.left},${getY(targetMax)} ${chartWidth - CHART_PADDING.right},${getY(targetMax)} ${chartWidth - CHART_PADDING.right},${getY(targetMin)} ${CHART_PADDING.left},${getY(targetMin)}`}
+        fill="#10B98120"
+        stroke="none"
+      />
+
+      {/* Horizontal grid lines */}
+      {yTicks.map((tick) => (
+        <SvgLine
+          key={tick}
+          x1={CHART_PADDING.left}
+          y1={getY(tick)}
+          x2={chartWidth - CHART_PADDING.right}
+          y2={getY(tick)}
+          stroke={gridColor}
+          strokeWidth={1}
+        />
+      ))}
+
+      {/* Y-axis labels */}
+      {yTicks.map((tick) => (
+        <SvgText
+          key={`label-${tick}`}
+          x={CHART_PADDING.left - 8}
+          y={getY(tick) + 4}
+          fill={textColor}
+          fontSize={10}
+          textAnchor="end"
+        >
+          {Math.round(tick)}
+        </SvgText>
+      ))}
+
+      {/* Data line */}
+      <Polyline
+        points={points}
+        fill="none"
+        stroke="#10B981"
+        strokeWidth={2}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+
+      {/* Data points */}
+      {data.map((d, i) => (
+        <Circle
+          key={i}
+          cx={getX(i)}
+          cy={getY(d.y)}
+          r={4}
+          fill="#10B981"
+        />
+      ))}
+    </Svg>
+  );
+}
 
 export default function ChartsScreen() {
   const [filter, setFilter] = useState<TimeFilter>('week');
@@ -173,27 +273,12 @@ export default function ChartsScreen() {
 
       {chartData.length > 1 ? (
         <View style={styles.chartContainer}>
-          <CartesianChart
+          <SimpleLineChart
             data={chartData}
-            xKey="x"
-            yKeys={['y']}
-            domainPadding={{ left: 10, right: 10, top: 20, bottom: 10 }}
-            axisOptions={{
-              font: null,
-              tickCount: 5,
-              labelColor: isDark ? '#9CA3AF' : '#6B7280',
-              lineColor: isDark ? '#374151' : '#E5E7EB',
-            }}
-          >
-            {({ points }) => (
-              <Line
-                points={points.y}
-                color="#10B981"
-                strokeWidth={2}
-                curveType="natural"
-              />
-            )}
-          </CartesianChart>
+            isDark={isDark}
+            targetMin={targetMin}
+            targetMax={targetMax}
+          />
         </View>
       ) : (
         <View style={styles.emptyChart}>

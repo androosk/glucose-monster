@@ -8,6 +8,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Image,
+  ScrollView,
 } from 'react-native';
 import { Link } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
@@ -72,9 +74,14 @@ export default function RegisterScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        <Image
+          source={require('@/assets/images/mascot-laptop.png')}
+          style={styles.mascot}
+          resizeMode="contain"
+        />
         <Text style={styles.title}>Create Account</Text>
-        <Text style={styles.subtitle}>Start tracking your glucose today</Text>
+        <Text style={styles.subtitle}>Join the fight against the glucose monster</Text>
 
         <View style={styles.form}>
           <TextInput
@@ -129,7 +136,7 @@ export default function RegisterScreen() {
             </TouchableOpacity>
           </Link>
         </View>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -140,9 +147,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#111827',
   },
   content: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 24,
+    paddingVertical: 48,
+  },
+  mascot: {
+    width: 120,
+    height: 120,
+    alignSelf: 'center',
+    marginBottom: 16,
   },
   title: {
     fontSize: 32,

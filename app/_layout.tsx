@@ -4,11 +4,74 @@ import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import 'react-native-reanimated';
-import Toast from 'react-native-toast-message';
+import Toast, { BaseToast, ToastConfig } from 'react-native-toast-message';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+
+const toastConfig: ToastConfig = {
+  success: (props) => (
+    <View style={toastStyles.container}>
+      <Image
+        source={require('@/assets/images/mascot.png')}
+        style={toastStyles.mascot}
+        resizeMode="contain"
+      />
+      <View style={toastStyles.textContainer}>
+        <Text style={toastStyles.title}>{props.text1}</Text>
+        {props.text2 && <Text style={toastStyles.message}>{props.text2}</Text>}
+      </View>
+    </View>
+  ),
+  error: (props) => (
+    <BaseToast
+      {...props}
+      style={{ borderLeftColor: '#EF4444', backgroundColor: '#1F2937' }}
+      contentContainerStyle={{ paddingHorizontal: 15 }}
+      text1Style={{ fontSize: 16, fontWeight: '600', color: '#F9FAFB' }}
+      text2Style={{ fontSize: 14, color: '#9CA3AF' }}
+    />
+  ),
+};
+
+const toastStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1F2937',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    marginHorizontal: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#10B981',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  mascot: {
+    width: 50,
+    height: 50,
+    marginRight: 12,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#F9FAFB',
+  },
+  message: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    marginTop: 2,
+  },
+});
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -52,7 +115,7 @@ function RootLayoutNav() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="edit/[id]" options={{ presentation: 'modal' }} />
       </Stack>
-      <Toast />
+      <Toast config={toastConfig} />
     </ThemeProvider>
   );
 }
