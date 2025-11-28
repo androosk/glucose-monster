@@ -33,6 +33,7 @@ export interface Reading {
   value: number
   reading_type: ReadingType
   carbs: number | null
+  insulin: number | null
   notes: string | null
   tags: string[] | null
   meal_id: string | null

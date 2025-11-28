@@ -22,7 +22,7 @@ const READING_TYPES: { value: ReadingType; label: string }[] = [
   { value: 'pre_meal', label: 'Pre-meal' },
   { value: 'post_30', label: 'Post-meal (30m)' },
   { value: 'post_90', label: 'Post-meal (90m)' },
-  { value: 'random', label: 'Random' },
+  { value: 'random', label: 'Other' },
 ];
 
 export default function EditReadingScreen() {
@@ -37,6 +37,7 @@ export default function EditReadingScreen() {
   const [value, setValue] = useState('');
   const [readingType, setReadingType] = useState<ReadingType>('random');
   const [carbs, setCarbs] = useState('');
+  const [insulin, setInsulin] = useState('');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -45,6 +46,7 @@ export default function EditReadingScreen() {
       setValue(reading.value.toString());
       setReadingType(reading.reading_type);
       setCarbs(reading.carbs?.toString() || '');
+      setInsulin(reading.insulin?.toString() || '');
       setNotes(reading.notes || '');
     }
   }, [reading]);
@@ -84,6 +86,7 @@ export default function EditReadingScreen() {
       value: glucoseValue,
       reading_type: readingType,
       carbs: carbs ? parseInt(carbs, 10) : null,
+      insulin: insulin ? parseFloat(insulin) : null,
       notes: notes.trim() || null,
     });
 
@@ -236,6 +239,25 @@ export default function EditReadingScreen() {
             onChangeText={setCarbs}
             keyboardType="number-pad"
             placeholder="Grams of carbs"
+            placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
+          />
+
+          <Text style={[styles.label, { color: isDark ? '#F9FAFB' : '#111827' }]}>
+            Insulin (optional)
+          </Text>
+          <TextInput
+            style={[
+              styles.input,
+              {
+                backgroundColor: isDark ? '#1F2937' : '#F9FAFB',
+                color: isDark ? '#F9FAFB' : '#111827',
+                borderColor: isDark ? '#374151' : '#E5E7EB',
+              },
+            ]}
+            value={insulin}
+            onChangeText={setInsulin}
+            keyboardType="decimal-pad"
+            placeholder="Units of insulin"
             placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
           />
 
