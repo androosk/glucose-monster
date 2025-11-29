@@ -10,7 +10,7 @@
 
 ---
 
-Diabetes is a monster. I didn't find any mobile apps that really allowed me to track my glucose in the way I wanted, so I created Glucose Monster with the intent of helping me tame it.
+Diabetes is a monster. There is a lack of mobile apps that really allow diabetics to track their glucose in a clean, useful and relatable way, so I created the Glucose Monster mobile app with the intent of helping them tame it.
 
 ## Features
 
